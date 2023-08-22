@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 1396378006052050313}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -97,5 +97,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77718d6851061574197ca05f6880c4ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vertexPrefab: {fileID: 18939827461395316, guid: 1b115255722188e468391e91e731f98b, type: 3}
-  edgePrefab: {fileID: 7782794514598666437, guid: 431f745010976d1448be25fcc852f1e7, type: 3}
+  vertexPrefab: {fileID: 856331352593174678, guid: 1b115255722188e468391e91e731f98b, type: 3}
+  edgePrefab: {fileID: -2280474260643447714, guid: 431f745010976d1448be25fcc852f1e7, type: 3}

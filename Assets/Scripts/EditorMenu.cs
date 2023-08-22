@@ -8,7 +8,6 @@ public class EditorMenu : MonoBehaviour
 {
     public Slider sizeSlider;
     public Button submitSize;
-    public Button nextToEdit;
     public Button backToSelectSize;
     public Button nextToSelect;
     public Button backToEdit;
@@ -22,13 +21,8 @@ public class EditorMenu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Instantiate(field);
-        field = GameObject.FindGameObjectWithTag("Field").GetComponent<SquareField>();
-        backToSelectSize.gameObject.SetActive(false);
-        nextToSelect.gameObject.SetActive(false);
-        backToEdit.gameObject.SetActive(false);
-        play.gameObject.SetActive(false);
-        save.gameObject.SetActive(false);
+        field = Instantiate(field);
+        SetActive(0);
     }
 
     // Update is called once per frame
@@ -37,8 +31,62 @@ public class EditorMenu : MonoBehaviour
         
     }
 
+    private void SetActive(int layer)
+    {
+        sizeSlider.gameObject.SetActive(layer == 0);
+        submitSize.gameObject.SetActive(layer == 0);
+        backToSelectSize.gameObject.SetActive(layer == 1);
+        nextToSelect.gameObject.SetActive(layer == 1);
+        backToEdit.gameObject.SetActive(layer == 2);
+        play.gameObject.SetActive(layer == 2);
+        save.gameObject.SetActive(layer == 2);
+    }
+
     public void OnSlider()
 	{
         submitSize.GetComponentInChildren<TextMeshProUGUI>().text = "submit size " + sizeSlider.value;
+        field.SetSize((int)sizeSlider.value);
     }
+
+    public void OnSubmitSize()
+	{
+        field.SetSize((int)sizeSlider.value);
+        SetActive(1);
+    }
+
+    public void OnBackToSelectSize()
+    {
+        SetActive(0);
+    }
+
+    public void OnNextToSelect()
+    {
+        SetActive(2);
+    }
+
+    public void OnBackToEdit()
+    {
+        SetActive(1);
+    }
+
+    public void OnPlay()
+	{
+
+	}
+
+    public void OnSave()
+    {
+
+    }
+
+    public void OnExit()
+    {
+        Application.Quit();
+    }
+
+    public void OnLoad()
+    {
+
+    }
+
 }

@@ -17,11 +17,13 @@ public class EditorMenu : MonoBehaviour
     public Button load;
     public TextMeshProUGUI log;
     public SquareField field;
+    public CameraSrc camera;
 
     // Start is called before the first frame update
     void Start()
     {
         field = Instantiate(field);
+        camera.field = field;
         SetActive(0);
     }
 

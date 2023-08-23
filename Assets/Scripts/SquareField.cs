@@ -10,18 +10,12 @@ public class SquareField : MonoBehaviour
     private Edge[][] allEdges;
     private int size;
     private readonly int minSize = 3;
-    private readonly int maxSize = 30;
+    private readonly int maxSize = 3;
     // Start is called before the first frame update
     void Start()
     {
         DontDestroyOnLoad(this);
         GenerateField();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     private void GenerateField()
@@ -48,7 +42,7 @@ public class SquareField : MonoBehaviour
         var edges = allEdges[index];
         float shift = 1f / (size * 2) - 0.5f;
         float edgeShift = 1f / (size) - 0.5f;
-        float height = 0.2f;
+        float height = -0.2f;
         float vertexScale = 1f / (size * 3);
         float edgeScaleX = 1f / size;
         float edgeScaleY = vertexScale / 2 ;
@@ -58,7 +52,7 @@ public class SquareField : MonoBehaviour
             float x = i % size;
             float y = i / size;
             vertexes[i] = Instantiate(vertexPrefab);
-            vertexes[i].transform.position = new Vector3(shift + x / size, shift + y / size, -height);
+            vertexes[i].transform.position = new Vector3(shift + x / size, shift + y / size, height);
             vertexes[i].transform.localScale = new Vector3(vertexScale, vertexScale, vertexScale);
             vertexes[i].gameObject.SetActive(false);
         }
@@ -68,7 +62,7 @@ public class SquareField : MonoBehaviour
             float x = i % (size - 1);
             float y = i / (size - 1);
             edges[i] = Instantiate(edgePrefab);
-            edges[i].transform.position = new Vector3(edgeShift + x / size, shift + y / size, -height / 2);
+            edges[i].transform.position = new Vector3(edgeShift + x / size, shift + y / size, height);
             edges[i].transform.localScale = new Vector3(edgeScaleX, edgeScaleY, vertexScale);
             edges[i].gameObject.SetActive(false);
         }
@@ -78,7 +72,7 @@ public class SquareField : MonoBehaviour
             float x = i % (size);
             float y = (i - edges.Length / 2) / (size);
             edges[i] = Instantiate(edgePrefab);
-            edges[i].transform.position = new Vector3(shift + x / size, edgeShift + y / size, -height / 2);
+            edges[i].transform.position = new Vector3(shift + x / size, edgeShift + y / size, height);
             edges[i].transform.eulerAngles = new Vector3(0, 0, 90);
             edges[i].transform.localScale = new Vector3(edgeScaleX, edgeScaleY, vertexScale);
             edges[i].gameObject.SetActive(false);

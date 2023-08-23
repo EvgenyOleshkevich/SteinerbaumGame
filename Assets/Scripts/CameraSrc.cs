@@ -23,18 +23,15 @@ public class CameraSrc : MonoBehaviour
 		if (Input.GetMouseButtonDown(1))
 		{
 			drag = true;
-			Debug.Log("mouse on");
 		}
 		if (Input.GetMouseButtonUp(1))
 		{
 			drag = false;
-			Debug.Log("mouse off");
 		}
 		if (drag)
 		{
 			float x = -Input.GetAxis("Mouse X") * speed * GetComponent<Camera>().orthographicSize;
 			float y = -Input.GetAxis("Mouse Y") * speed * GetComponent<Camera>().orthographicSize;
-			Debug.Log(x);
 			transform.position = new Vector3(Math.Max(-posMax, Math.Min(posMax, transform.position.x + x)),
 				Math.Max(-posMax, Math.Min(posMax, transform.position.y + y)), -1);
 		}

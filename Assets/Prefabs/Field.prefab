@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1396378006052050311}
   - component: {fileID: 1396378006052050310}
   - component: {fileID: 3655217253125800080}
+  - component: {fileID: 2762256621802007111}
   m_Layer: 0
   m_Name: Field
   m_TagString: Field
@@ -99,3 +100,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vertexPrefab: {fileID: 856331352593174678, guid: 1b115255722188e468391e91e731f98b, type: 3}
   edgePrefab: {fileID: -2280474260643447714, guid: 431f745010976d1448be25fcc852f1e7, type: 3}
+--- !u!61 &2762256621802007111
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1396378006052050313}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0

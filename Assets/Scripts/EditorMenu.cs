@@ -27,12 +27,6 @@ public class EditorMenu : MonoBehaviour
         SetActive(0);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void SetActive(int layer)
     {
         sizeSlider.gameObject.SetActive(layer == 0);

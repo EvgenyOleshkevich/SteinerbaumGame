@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SquareField : MonoBehaviour
 {
@@ -10,12 +11,15 @@ public class SquareField : MonoBehaviour
     private Edge[][] allEdges;
     private int size;
     private readonly int minSize = 3;
-    private readonly int maxSize = 3;
+    private readonly int maxSize = 30;
+    public enum Mode { none = 0, selectSize, selectFigure, selectVertex, play };
+    public Mode mode { get; set; } = Mode.none;
     // Start is called before the first frame update
     void Start()
     {
         DontDestroyOnLoad(this);
         GenerateField();
+        mode = Mode.selectFigure;
     }
 
     private void GenerateField()
@@ -52,6 +56,7 @@ public class SquareField : MonoBehaviour
             float x = i % size;
             float y = i / size;
             vertexes[i] = Instantiate(vertexPrefab);
+            vertexes[i].field = this;
             vertexes[i].transform.position = new Vector3(shift + x / size, shift + y / size, height);
             vertexes[i].transform.localScale = new Vector3(vertexScale, vertexScale, vertexScale);
             vertexes[i].gameObject.SetActive(false);
@@ -62,6 +67,12 @@ public class SquareField : MonoBehaviour
             float x = i % (size - 1);
             float y = i / (size - 1);
             edges[i] = Instantiate(edgePrefab);
+            edges[i].field = this;
+            edges[i].vertex1 = vertexes[i + i / (size - 1)];
+            edges[i].vertex2 = vertexes[i + i / (size - 1) + 1];
+            vertexes[i + i / (size - 1)].rightEdge = edges[i];
+            vertexes[i + i / (size - 1) + 1].leftEdge = edges[i];
+
             edges[i].transform.position = new Vector3(edgeShift + x / size, shift + y / size, height);
             edges[i].transform.localScale = new Vector3(edgeScaleX, edgeScaleY, vertexScale);
             edges[i].gameObject.SetActive(false);
@@ -69,9 +80,16 @@ public class SquareField : MonoBehaviour
 
         for (int i = edges.Length / 2; i < edges.Length; ++i)
         {
+            int schiftIndex = i - edges.Length / 2;
             float x = i % (size);
-            float y = (i - edges.Length / 2) / (size);
+            float y = (schiftIndex) / (size);
             edges[i] = Instantiate(edgePrefab);
+            edges[i].field = this;
+            edges[i].vertex1 = vertexes[schiftIndex];
+            edges[i].vertex2 = vertexes[schiftIndex + size];
+            vertexes[schiftIndex].upperEdge = edges[i];
+            vertexes[schiftIndex + size].bottomEdge = edges[i];
+
             edges[i].transform.position = new Vector3(shift + x / size, edgeShift + y / size, height);
             edges[i].transform.eulerAngles = new Vector3(0, 0, 90);
             edges[i].transform.localScale = new Vector3(edgeScaleX, edgeScaleY, vertexScale);

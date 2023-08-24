@@ -114,4 +114,69 @@ public class SquareField : MonoBehaviour
         SetActive(newSize, true);
         size = newSize;
     }
+
+    public bool IsConnected()
+	{
+        int countEnabled = 0;
+        Vertex start = null;
+        for (int i = 0; i < allVertexes[size].Length; ++i)
+            if (allVertexes[size][i].staus == Vertex.Status.enabled)
+                ++countEnabled;
+
+        for (int i = 0; i < allVertexes[size].Length; ++i)
+            if (allVertexes[size][i].staus == Vertex.Status.enabled)
+            {
+                start = allVertexes[size][i];
+                break;
+            }
+
+        return countEnabled != 0 && DFS(start, Vertex.Status.enabled, Edge.Status.enabled) == countEnabled;
+	}
+
+    public bool IsSolved()
+    {
+        int countSelected = 0;
+        Vertex start = null;
+        for (int i = 0; i < allVertexes[size].Length; ++i)
+            if (allVertexes[size][i].staus == Vertex.Status.selected)
+                ++countSelected;
+
+        for (int i = 0; i < allVertexes[size].Length; ++i)
+            if (allVertexes[size][i].staus == Vertex.Status.selected)
+            {
+                start = allVertexes[size][i];
+                break;
+            }
+
+        return countSelected != 0 && DFS(start, Vertex.Status.selected, Edge.Status.selected) == countSelected;
+    }
+
+    private int DFS(Vertex start, Vertex.Status allowedVertex,  Edge.Status allowedEdge)
+    {
+        var visited = new HashSet<Vertex>();
+        var vertexes = new Stack<Vertex>();
+        vertexes.Push(start);
+        int count = 0;
+
+        while (vertexes.Count != 0)
+		{
+            var vertex = vertexes.Pop();
+            visited.Add(vertex);
+            if (vertex.staus == allowedVertex)
+                ++count;
+
+            foreach (Edge edge in vertex.edges)
+			{
+                if (edge.staus == allowedEdge)
+                {
+                    if (!visited.Contains(edge.vertex1))
+                        vertexes.Push(edge.vertex1);
+
+                    if (!visited.Contains(edge.vertex2))
+                        vertexes.Push(edge.vertex2);
+                }
+            }
+        }
+        return count;
+    }
 }

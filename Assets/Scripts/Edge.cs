@@ -9,6 +9,8 @@ public class Edge : MonoBehaviour
     public Vertex vertex2 { get; set; }
 
 	public bool enabled { get; private set; } = true;
+	public enum Status { disabled = 0, enabled, selected};
+	public Status staus { get; private set; } = Status.enabled;
 	public Color defaultColor;
 	public Color currentColor;
     // Start is called before the first frame update

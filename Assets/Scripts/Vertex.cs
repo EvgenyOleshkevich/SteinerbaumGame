@@ -10,7 +10,11 @@ public class Vertex : MonoBehaviour
 	public Edge leftEdge { get; set; }
 	public Edge rightEdge { get; set; }
 
+	public List<Edge> edges;
+
 	public bool enabled { get; private set; } = true;
+	public enum Status { disabled = 0, enabled, selected };
+	public Status staus { get; private set; } = Status.enabled;
 	public Color defaultColor;
 	public Color currentColor;
 	// Start is called before the first frame update
@@ -71,7 +75,6 @@ public class Vertex : MonoBehaviour
 		enabled = _enabled;
 		if (enabled)
 		{
-			Debug.Log(CountNeiborvertex());
 			if (CountNeiborvertex() > 0)
 			{
 				currentColor = defaultColor;

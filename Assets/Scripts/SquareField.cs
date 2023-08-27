@@ -70,8 +70,8 @@ public class SquareField : MonoBehaviour
             edges[i].field = this;
             edges[i].vertex1 = vertexes[i + i / (size - 1)];
             edges[i].vertex2 = vertexes[i + i / (size - 1) + 1];
-            vertexes[i + i / (size - 1)].rightEdge = edges[i];
-            vertexes[i + i / (size - 1) + 1].leftEdge = edges[i];
+            vertexes[i + i / (size - 1)].edges.Add(edges[i]);
+            vertexes[i + i / (size - 1) + 1].edges.Add(edges[i]);
 
             edges[i].transform.position = new Vector3(edgeShift + x / size, shift + y / size, height);
             edges[i].transform.localScale = new Vector3(edgeScaleX, edgeScaleY, vertexScale);
@@ -87,8 +87,8 @@ public class SquareField : MonoBehaviour
             edges[i].field = this;
             edges[i].vertex1 = vertexes[schiftIndex];
             edges[i].vertex2 = vertexes[schiftIndex + size];
-            vertexes[schiftIndex].upperEdge = edges[i];
-            vertexes[schiftIndex + size].bottomEdge = edges[i];
+            vertexes[schiftIndex].edges.Add(edges[i]);
+            vertexes[schiftIndex + size].edges.Add(edges[i]);
 
             edges[i].transform.position = new Vector3(shift + x / size, edgeShift + y / size, height);
             edges[i].transform.eulerAngles = new Vector3(0, 0, 90);

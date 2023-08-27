@@ -23,15 +23,15 @@ public class Edge : MonoBehaviour
 	void OnMouseEnter()
 	{
 		GetComponent<Renderer>().material.color = Color.Lerp(Color.black, currentColor, 0.7f);
-		//vertex1.Enter();
-		//vertex2.Enter();
+		vertex1.Enter();
+		vertex2.Enter();
 	}
 
 	void OnMouseExit()
 	{
 		GetComponent<Renderer>().material.color = currentColor;
-		//vertex1.Exit();
-		//vertex2.Exit();
+		vertex1.Exit();
+		vertex2.Exit();
 	}
 
 	void OnMouseDown()

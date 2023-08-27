@@ -38,7 +38,7 @@ public class Edge : MonoBehaviour
 	{
 		if (field.mode == SquareField.Mode.selectFigure)
 		{
-			SetEnabled(!enabled);
+			SetStatus(staus == Status.enabled ? Status.disabled : Status.enabled);
 		}
 	}
 
@@ -52,28 +52,28 @@ public class Edge : MonoBehaviour
 		GetComponent<Renderer>().material.color = currentColor;
 	}
 
-	public void SetEnabled(bool _enabled)
+	public void SetStatus(Status _status)
 	{
-		if (enabled == _enabled)
+		if (staus == _status)
 			return;
-		enabled = _enabled;
-		if (enabled)
+		staus = _status;
+		if (staus == Status.enabled)
 		{
 			if (CouldBeEnabled())
 				currentColor = defaultColor;
 			else
 			{
-				enabled = !enabled;
+				staus = Status.disabled;
 				return;
 			}
 		}
-		else
+		else if (staus == Status.disabled)
 		{
 			currentColor = Color.gray;
-			if (vertex1.enabled && vertex1.CountEdges() == 0)
-				vertex1.SetEnabled(enabled);
-			if (vertex2.enabled && vertex2.CountEdges() == 0)
-				vertex2.SetEnabled(enabled);
+			if (vertex1.CountEdges() == 0)
+				vertex1.SetStatus(Vertex.Status.disabled);
+			if (vertex2.CountEdges() == 0)
+				vertex2.SetStatus(Vertex.Status.disabled);
 		}
 			
 		GetComponent<Renderer>().material.color = currentColor;
@@ -81,6 +81,6 @@ public class Edge : MonoBehaviour
 
 	public bool CouldBeEnabled()
 	{
-		return vertex1.enabled && vertex2.enabled;
+		return vertex1.staus == Vertex.Status.enabled && vertex2.staus == Vertex.Status.enabled;
 	}
 }

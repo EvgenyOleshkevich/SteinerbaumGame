@@ -7,7 +7,6 @@ public class Vertex : MonoBehaviour
 	public SquareField field { get; set; }
 	public List<Edge> edges;
 
-	public bool enabled { get; private set; } = true;
 	public enum Status { disabled = 0, enabled, selected };
 	public Status staus { get; private set; } = Status.enabled;
 	public Color defaultColor;
@@ -37,7 +36,7 @@ public class Vertex : MonoBehaviour
 	{
 		if (field.mode == SquareField.Mode.selectFigure)
 		{
-			SetEnabled(!enabled);
+			SetStatus(staus == Status.enabled ? Status.disabled : Status.enabled);
 		}
 	}
 
@@ -51,32 +50,32 @@ public class Vertex : MonoBehaviour
 		GetComponent<Renderer>().material.color = currentColor;
 	}
 
-	public void SetEnabled(bool _enabled)
+	public void SetStatus(Status _status)
 	{
-		if (enabled == _enabled)
+		if (staus == _status)
 			return;
-		enabled = _enabled;
-		if (enabled)
+		staus = _status;
+		if (staus == Status.enabled)
 		{
-			if (CountNeiborvertex() > 0)
+			if (CountNeiborVertex() > 0)
 			{
 				currentColor = defaultColor;
 				foreach (Edge edge in edges)
 					if (edge.CouldBeEnabled())
-						edge.SetEnabled(enabled);
+						edge.SetStatus(Edge.Status.enabled);
 			}
 			else
 			{
-				enabled = !enabled;
+				staus = Status.disabled;
 				return;
 			}
 		}
-		else
+		else if (staus == Status.disabled)
 		{
 			currentColor = Color.gray;
 			foreach (Edge edge in edges)
 				if (edge.enabled)
-					edge.SetEnabled(enabled);
+					edge.SetStatus(Edge.Status.disabled);
 		}
 		GetComponent<Renderer>().material.color = currentColor;
 	}
@@ -85,20 +84,19 @@ public class Vertex : MonoBehaviour
 	{
 		int count = 0;
 		foreach (Edge edge in edges)
-			if (edge.enabled)
+			if (edge.staus == Edge.Status.enabled)
 				++count;
 
 		return count;
 	}
 
-	public int CountNeiborvertex()
+	public int CountNeiborVertex()
 	{
 		int count = 0;
 
 		foreach (Edge edge in edges)
-			if (edge &&
-				edge.vertex1.enabled &&
-				edge.vertex2.enabled)
+			if (edge.vertex1.staus == Status.enabled &&
+				edge.vertex2.staus == Status.enabled)
 				++count;
 		return count;
 	}

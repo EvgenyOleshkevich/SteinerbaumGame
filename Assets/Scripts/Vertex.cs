@@ -8,7 +8,7 @@ public class Vertex : MonoBehaviour
 	public List<Edge> edges;
 
 	public enum Status { disabled = 0, enabled, selected };
-	public Status staus { get; private set; } = Status.enabled;
+	public Status status { get; set; } = Status.enabled;
 	public Color defaultColor;
 	public Color currentColor;
 	// Start is called before the first frame update
@@ -36,7 +36,7 @@ public class Vertex : MonoBehaviour
 	{
 		if (field.mode == SquareField.Mode.selectFigure)
 		{
-			SetStatus(staus == Status.enabled ? Status.disabled : Status.enabled);
+			SetStatus(status == Status.enabled ? Status.disabled : Status.enabled);
 		}
 	}
 
@@ -52,10 +52,10 @@ public class Vertex : MonoBehaviour
 
 	public void SetStatus(Status _status)
 	{
-		if (staus == _status)
+		if (status == _status)
 			return;
-		staus = _status;
-		if (staus == Status.enabled)
+		status = _status;
+		if (status == Status.enabled)
 		{
 			if (CountNeiborVertex() > 0)
 			{
@@ -66,17 +66,57 @@ public class Vertex : MonoBehaviour
 			}
 			else
 			{
-				staus = Status.disabled;
+				status = Status.disabled;
 				return;
 			}
 		}
-		else if (staus == Status.disabled)
+		else if (status == Status.disabled)
 		{
-			currentColor = Color.gray;
+			var rollbackEdge = new List<Edge>();
+			var rollbackVertex = new List<Vertex>();
 			foreach (Edge edge in edges)
-				if (edge.enabled)
-					edge.SetStatus(Edge.Status.disabled);
+				if (edge.status != Edge.Status.disabled)
+				{
+					edge.status = Edge.Status.disabled;
+					rollbackEdge.Add(edge);
+					if (edge.vertex1 != this && edge.vertex1.CountEdges() == 0)
+					{
+						edge.vertex1.status = Status.disabled;
+						rollbackVertex.Add(edge.vertex1);
+					}
+					if (edge.vertex2 != this && edge.vertex2.CountEdges() == 0)
+					{
+						edge.vertex2.status = Status.disabled;
+						rollbackVertex.Add(edge.vertex2);
+					}
+				}
+			
+			if (field.IsConnected())
+			{
+				foreach (Edge edge in rollbackEdge)
+					edge.ForceDisable();
+				foreach (Vertex vertex in rollbackVertex)
+					vertex.ForceDisable();
+
+			}
+			else
+			{
+				status = Status.enabled;
+				foreach (Edge edge in rollbackEdge)
+					edge.status = Edge.Status.enabled;
+				foreach (Vertex vertex in rollbackVertex)
+					vertex.status = Status.enabled;
+				return;
+			}
+			currentColor = Color.gray;
 		}
+		GetComponent<Renderer>().material.color = currentColor;
+	}
+
+	public void ForceDisable()
+	{
+		status = Status.disabled;
+		currentColor = Color.gray;
 		GetComponent<Renderer>().material.color = currentColor;
 	}
 
@@ -84,7 +124,7 @@ public class Vertex : MonoBehaviour
 	{
 		int count = 0;
 		foreach (Edge edge in edges)
-			if (edge.staus == Edge.Status.enabled)
+			if (edge.status == Edge.Status.enabled)
 				++count;
 
 		return count;
@@ -95,8 +135,8 @@ public class Vertex : MonoBehaviour
 		int count = 0;
 
 		foreach (Edge edge in edges)
-			if (edge.vertex1.staus == Status.enabled &&
-				edge.vertex2.staus == Status.enabled)
+			if (edge.vertex1.status == Status.enabled &&
+				edge.vertex2.status == Status.enabled)
 				++count;
 		return count;
 	}

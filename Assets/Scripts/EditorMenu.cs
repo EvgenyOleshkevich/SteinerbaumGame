@@ -23,6 +23,7 @@ public class EditorMenu : MonoBehaviour
     void Start()
     {
         field = Instantiate(field);
+        field.log = log;
         camera.field = field;
         SetActive(0);
     }

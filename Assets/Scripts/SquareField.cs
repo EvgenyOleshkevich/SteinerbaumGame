@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class SquareField : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class SquareField : MonoBehaviour
     private readonly int maxSize = 30;
     public enum Mode { none = 0, selectSize, selectFigure, selectVertex, play };
     public Mode mode { get; set; } = Mode.none;
+    public TextMeshProUGUI log { get; set; }
     // Start is called before the first frame update
     void Start()
     {
@@ -118,31 +120,42 @@ public class SquareField : MonoBehaviour
     public bool IsConnected()
 	{
         int countEnabled = 0;
+        int index = size - minSize;
         Vertex start = null;
-        for (int i = 0; i < allVertexes[size].Length; ++i)
-            if (allVertexes[size][i].staus == Vertex.Status.enabled)
+        for (int i = 0; i < allVertexes[index].Length; ++i)
+            if (allVertexes[index][i].status == Vertex.Status.enabled)
                 ++countEnabled;
 
-        for (int i = 0; i < allVertexes[size].Length; ++i)
-            if (allVertexes[size][i].staus == Vertex.Status.enabled)
+        for (int i = 0; i < allVertexes[index].Length; ++i)
+            if (allVertexes[index][i].status == Vertex.Status.enabled)
             {
-                start = allVertexes[size][i];
+                start = allVertexes[index][i];
                 break;
             }
-
-        return countEnabled != 0 && DFS(start, Vertex.Status.enabled, Edge.Status.enabled) == countEnabled;
-	}
+        Debug.Log(countEnabled);
+        if (countEnabled == 0)
+		{
+            log.text = "graph can not ba empty";
+            return false;
+        }
+        int dfs_count = DFS(start, Vertex.Status.enabled, Edge.Status.enabled);
+        Debug.Log(dfs_count);
+        bool res = dfs_count == countEnabled;
+        if (!res)
+            log.text = "graph should be connected";
+        return res;
+    }
 
     public bool IsSolved()
     {
         int countSelected = 0;
         Vertex start = null;
         for (int i = 0; i < allVertexes[size].Length; ++i)
-            if (allVertexes[size][i].staus == Vertex.Status.selected)
+            if (allVertexes[size][i].status == Vertex.Status.selected)
                 ++countSelected;
 
         for (int i = 0; i < allVertexes[size].Length; ++i)
-            if (allVertexes[size][i].staus == Vertex.Status.selected)
+            if (allVertexes[size][i].status == Vertex.Status.selected)
             {
                 start = allVertexes[size][i];
                 break;
@@ -156,24 +169,30 @@ public class SquareField : MonoBehaviour
         var visited = new HashSet<Vertex>();
         var vertexes = new Stack<Vertex>();
         vertexes.Push(start);
+        visited.Add(start);
         int count = 0;
 
         while (vertexes.Count != 0)
 		{
             var vertex = vertexes.Pop();
-            visited.Add(vertex);
-            if (vertex.staus == allowedVertex)
+            if (vertex.status == allowedVertex)
                 ++count;
 
             foreach (Edge edge in vertex.edges)
 			{
-                if (edge.staus == allowedEdge)
+                if (edge.status == allowedEdge)
                 {
                     if (!visited.Contains(edge.vertex1))
+                    {
                         vertexes.Push(edge.vertex1);
+                        visited.Add(edge.vertex1);
+                    }
 
                     if (!visited.Contains(edge.vertex2))
+                    {
                         vertexes.Push(edge.vertex2);
+                        visited.Add(edge.vertex2);
+                    }
                 }
             }
         }

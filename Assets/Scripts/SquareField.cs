@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.IO;
 
 public class SquareField : MonoBehaviour
 {
@@ -168,7 +169,37 @@ public class SquareField : MonoBehaviour
         mode = _mode;
     }
 
-    private int CountSelectedVertex()
+    public void Save()
+    {
+        using (StreamWriter writer = new StreamWriter("game.txt"))
+        {
+            writer.WriteLine(size);
+
+            int index = size - minSize;
+            for (int i = 0; i < allVertexes[index].Length; ++i)
+                writer.WriteLine(((int)allVertexes[index][i].status));
+
+            for (int i = 0; i < allEdges[index].Length; ++i)
+                writer.WriteLine(((int)allEdges[index][i].status));
+        }
+	}
+
+
+    public void Load(string path)
+    {
+		var reader = new StreamReader(path);
+		SetSize(int.Parse(reader.ReadLine()));
+
+		int index = size - minSize;
+		for (int i = 0; i < allVertexes[index].Length; ++i)
+			allVertexes[index][i].ForceSetStatus((Vertex.Status)int.Parse(reader.ReadLine()));
+
+		for (int i = 0; i < allEdges[index].Length; ++i)
+			allEdges[index][i].ForceSetStatus((Edge.Status)int.Parse(reader.ReadLine()));
+        mode = Mode.play;
+    }
+
+        public int CountSelectedVertex()
 	{
         int index = size - minSize;
         int countSelected = 0;
@@ -178,7 +209,7 @@ public class SquareField : MonoBehaviour
         return countSelected;
     }
 
-    private int CountSelectedEdge()
+    public int CountSelectedEdge()
     {
         int index = size - minSize;
         int countSelected = 0;

@@ -116,6 +116,13 @@ public class Edge : MonoBehaviour
 		GetComponent<SpriteRenderer>().color = currentColor;
 	}
 
+	public void ForceEnable()
+	{
+		status = Status.enabled;
+		currentColor = enabledColor;
+		GetComponent<SpriteRenderer>().color = currentColor;
+	}
+
 	public void ForceDisable()
 	{
 		status = Status.disabled;
@@ -123,10 +130,22 @@ public class Edge : MonoBehaviour
 		GetComponent<SpriteRenderer>().color = currentColor;
 	}
 
-	public void ForceEnable()
+	public void ForceSelect()
 	{
-		status = Status.enabled;
-		currentColor = enabledColor;
+		status = Status.selected;
+		currentColor = selectedColor;
+		GetComponent<SpriteRenderer>().color = currentColor;
+	}
+
+	public void ForceSetStatus(Status _status)
+	{
+		status = _status;
+		if (status == Status.disabled)
+			currentColor = disabledColor;
+		else if (status == Status.enabled)
+			currentColor = enabledColor;
+		else if (status == Status.selected)
+			currentColor = selectedColor;
 		GetComponent<SpriteRenderer>().color = currentColor;
 	}
 

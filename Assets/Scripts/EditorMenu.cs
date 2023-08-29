@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEditor;
 
 public class EditorMenu : MonoBehaviour
 {
@@ -33,23 +34,23 @@ public class EditorMenu : MonoBehaviour
     {
         sizeSlider.gameObject.SetActive(layer == 0);
         submitSize.gameObject.SetActive(layer == 0);
+        load.gameObject.SetActive(layer == 0);
         backToSelectSize.gameObject.SetActive(layer == 1);
         nextToSelect.gameObject.SetActive(layer == 1);
         backToEdit.gameObject.SetActive(layer == 2);
         play.gameObject.SetActive(layer == 2);
         save.gameObject.SetActive(layer == 2);
         backToSelectSizeFromPlay.gameObject.SetActive(layer == 3);
-        load.gameObject.SetActive(layer != 3);
     }
 
     public void OnSlider()
-	{
+    {
         submitSize.GetComponentInChildren<TextMeshProUGUI>().text = "submit size " + sizeSlider.value;
         field.SetSize((int)sizeSlider.value);
     }
 
     public void OnSubmitSize()
-	{
+    {
         field.SetSize((int)sizeSlider.value);
         field.SetMode(SquareField.Mode.selectFigure);
         SetActive(1);
@@ -74,8 +75,8 @@ public class EditorMenu : MonoBehaviour
     }
 
     public void OnPlay()
-	{
-        
+    {
+
         field.SetMode(SquareField.Mode.play);
         if (field.mode == SquareField.Mode.play)
             SetActive(3);
@@ -83,7 +84,12 @@ public class EditorMenu : MonoBehaviour
 
     public void OnSave()
     {
-
+        if (field.CountSelectedVertex() < 2)
+        {
+            log.text = "at least 2 vertexes should be selected";
+            return;
+        }
+        field.Save();
     }
 
     public void OnExit()
@@ -93,7 +99,12 @@ public class EditorMenu : MonoBehaviour
 
     public void OnLoad()
     {
+        string path = EditorUtility.OpenFilePanel("Overwrite with txt", "", "txt");
+        if (path.Length != 0)
+        {
+            field.Load(path);
+            SetActive(3);
+        }
 
     }
-
 }

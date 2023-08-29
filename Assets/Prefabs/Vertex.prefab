@@ -98,6 +98,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eef053eeb46f54a4e8368fd4078efb06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  edges: []
+  currentColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!58 &-2625558241726596554
 CircleCollider2D:
   m_ObjectHideFlags: 0

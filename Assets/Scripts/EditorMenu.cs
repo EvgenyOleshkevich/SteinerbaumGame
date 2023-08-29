@@ -76,7 +76,6 @@ public class EditorMenu : MonoBehaviour
 
     public void OnPlay()
     {
-
         field.SetMode(SquareField.Mode.play);
         if (field.mode == SquareField.Mode.play)
             SetActive(3);
@@ -89,7 +88,11 @@ public class EditorMenu : MonoBehaviour
             log.text = "at least 2 vertexes should be selected";
             return;
         }
-        field.Save();
+        string path = EditorUtility.SaveFilePanel("Save txt", "", "game.txt", "txt");
+        if (path.Length != 0)
+        {
+            field.Save(path);
+        }
     }
 
     public void OnExit()
@@ -104,7 +107,7 @@ public class EditorMenu : MonoBehaviour
         {
             field.Load(path);
             SetActive(3);
+            sizeSlider.value = field.size;
         }
-
     }
 }

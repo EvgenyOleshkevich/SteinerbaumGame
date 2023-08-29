@@ -10,17 +10,10 @@ public class Edge : MonoBehaviour
 
 	public enum Status { disabled = 0, enabled, selected};
 	public Status status { get; set; } = Status.enabled;
-	public Color disabledColor = Color.gray;
-	public Color enabledColor;
-	public Color selectedColor = Color.blue;
-	public Color currentColor;
-	// Start is called before the first frame update
-	void Start()
-    {
-		enabledColor = GetComponent<SpriteRenderer>().color;
-		currentColor = enabledColor;
-		disabledColor = Color.Lerp(disabledColor, enabledColor, 0.15f);
-	}
+	public readonly Color disabledColor = Color.Lerp(Color.gray, Color.green, 0.15f);
+	public readonly Color enabledColor = Color.green;
+	public readonly Color selectedColor = Color.blue;
+	public Color currentColor = Color.green;
 
 	void OnMouseEnter()
 	{

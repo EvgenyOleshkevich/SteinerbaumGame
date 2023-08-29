@@ -11,7 +11,7 @@ public class SquareField : MonoBehaviour
     public Edge edgePrefab;
     private Vertex[][] allVertexes;
     private Edge[][] allEdges;
-    private int size;
+    public int size { get; private set; }
     private readonly int minSize = 3;
     private readonly int maxSize = 30;
     public enum Mode { none = 0, selectSize, selectFigure, selectVertex, play };
@@ -112,6 +112,8 @@ public class SquareField : MonoBehaviour
 
     public void SetSize(int newSize)
 	{
+        if (size == newSize)
+            return;
         SetActive(size, false);
         SetActive(newSize, true);
         size = newSize;
@@ -119,11 +121,11 @@ public class SquareField : MonoBehaviour
 
     public void SetMode(Mode _mode)
     {
+        int index = size - minSize;
         if (mode == Mode.selectFigure)
         {
             if (_mode == Mode.selectSize)
             {
-                int index = size - minSize;
                 for (int i = 0; i < allEdges[index].Length; ++i)
                     if (allEdges[index][i].status == Edge.Status.disabled)
                         allEdges[index][i].ForceEnable();
@@ -137,23 +139,28 @@ public class SquareField : MonoBehaviour
         {
             if (_mode == Mode.selectFigure)
             {
-                int index = size - minSize;
                 for (int i = 0; i < allVertexes[index].Length; ++i)
                     if (allVertexes[index][i].status == Vertex.Status.selected)
                         allVertexes[index][i].ForceEnable();
             }
             else if (_mode == Mode.play)
-			{
+            {
                 if (CountSelectedVertex() < 2)
-				{
+                {
                     log.text = "at least 2 vertexes should be selected";
                     return;
                 }
-			}
+                for (int i = 0; i < allVertexes[index].Length; ++i)
+                    if (allVertexes[index][i].status == Vertex.Status.disabled)
+                        allVertexes[index][i].gameObject.SetActive(false);
+
+                for (int i = 0; i < allEdges[index].Length; ++i)
+                    if (allEdges[index][i].status == Edge.Status.disabled)
+                        allEdges[index][i].gameObject.SetActive(false);
+            }
         }
         else if (mode == Mode.play && _mode == Mode.selectSize)
-		{
-            int index = size - minSize;
+        {
             for (int i = 0; i < allEdges[index].Length; ++i)
             {
                 allEdges[index][i].gameObject.SetActive(true);
@@ -169,9 +176,9 @@ public class SquareField : MonoBehaviour
         mode = _mode;
     }
 
-    public void Save()
+    public void Save(string path)
     {
-        using (StreamWriter writer = new StreamWriter("game.txt"))
+        using (StreamWriter writer = new StreamWriter(path))
         {
             writer.WriteLine(size);
 
@@ -189,17 +196,17 @@ public class SquareField : MonoBehaviour
     {
 		var reader = new StreamReader(path);
 		SetSize(int.Parse(reader.ReadLine()));
-
 		int index = size - minSize;
 		for (int i = 0; i < allVertexes[index].Length; ++i)
 			allVertexes[index][i].ForceSetStatus((Vertex.Status)int.Parse(reader.ReadLine()));
 
 		for (int i = 0; i < allEdges[index].Length; ++i)
 			allEdges[index][i].ForceSetStatus((Edge.Status)int.Parse(reader.ReadLine()));
-        mode = Mode.play;
+        mode = Mode.selectVertex;
+        SetMode(Mode.play);
     }
 
-        public int CountSelectedVertex()
+    public int CountSelectedVertex()
 	{
         int index = size - minSize;
         int countSelected = 0;

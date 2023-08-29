@@ -124,10 +124,12 @@ public class SquareField : MonoBehaviour
             {
                 int index = size - minSize;
                 for (int i = 0; i < allEdges[index].Length; ++i)
-                    allEdges[index][i].ForceEnable();
+                    if (allEdges[index][i].status == Edge.Status.disabled)
+                        allEdges[index][i].ForceEnable();
 
                 for (int i = 0; i < allVertexes[index].Length; ++i)
-                    allVertexes[index][i].ForceEnable();
+                    if (allVertexes[index][i].status == Vertex.Status.disabled)
+                        allVertexes[index][i].ForceEnable();
             }
         }
         else if (mode == Mode.selectVertex)
@@ -139,8 +141,51 @@ public class SquareField : MonoBehaviour
                     if (allVertexes[index][i].status == Vertex.Status.selected)
                         allVertexes[index][i].ForceEnable();
             }
+            else if (_mode == Mode.play)
+			{
+                if (CountSelectedVertex() < 2)
+				{
+                    log.text = "at least 2 vertexes should be selected";
+                    return;
+                }
+			}
+        }
+        else if (mode == Mode.play && _mode == Mode.selectSize)
+		{
+            int index = size - minSize;
+            for (int i = 0; i < allEdges[index].Length; ++i)
+            {
+                allEdges[index][i].gameObject.SetActive(true);
+                allEdges[index][i].ForceEnable();
+            }
+
+            for (int i = 0; i < allVertexes[index].Length; ++i)
+            {
+                allVertexes[index][i].gameObject.SetActive(true);
+                allVertexes[index][i].ForceEnable();
+            }
         }
         mode = _mode;
+    }
+
+    private int CountSelectedVertex()
+	{
+        int index = size - minSize;
+        int countSelected = 0;
+        for (int i = 0; i < allVertexes[index].Length; ++i)
+            if (allVertexes[index][i].status == Vertex.Status.selected)
+                ++countSelected;
+        return countSelected;
+    }
+
+    private int CountSelectedEdge()
+    {
+        int index = size - minSize;
+        int countSelected = 0;
+        for (int i = 0; i < allEdges[index].Length; ++i)
+            if (allEdges[index][i].status == Edge.Status.selected)
+                ++countSelected;
+        return countSelected;
     }
 
     public bool IsConnected()
@@ -173,19 +218,29 @@ public class SquareField : MonoBehaviour
     public bool IsSolved()
     {
         int countSelected = 0;
+        int index = size - minSize;
         Vertex start = null;
-        for (int i = 0; i < allVertexes[size].Length; ++i)
-            if (allVertexes[size][i].status == Vertex.Status.selected)
+        for (int i = 0; i < allVertexes[index].Length; ++i)
+            if (allVertexes[index][i].status == Vertex.Status.selected)
                 ++countSelected;
 
-        for (int i = 0; i < allVertexes[size].Length; ++i)
-            if (allVertexes[size][i].status == Vertex.Status.selected)
+        for (int i = 0; i < allVertexes[index].Length; ++i)
+            if (allVertexes[index][i].status == Vertex.Status.selected)
             {
-                start = allVertexes[size][i];
+                start = allVertexes[index][i];
                 break;
             }
 
-        return countSelected != 0 && DFS(start, Vertex.Status.selected, Edge.Status.selected) == countSelected;
+        if (countSelected == 0)
+        {
+            log.text = "graph can not ba empty";
+            return false;
+        }
+        bool res = DFS(start, Vertex.Status.selected, Edge.Status.selected) == countSelected;
+        log.text = "Length: " + CountSelectedEdge();
+        if (res)
+            log.text += "\ngraph is solved connected";
+        return res;
     }
 
     private int DFS(Vertex start, Vertex.Status allowedVertex,  Edge.Status allowedEdge)

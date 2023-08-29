@@ -13,6 +13,7 @@ public class EditorMenu : MonoBehaviour
     public Button backToEdit;
     public Button play;
     public Button save;
+    public Button backToSelectSizeFromPlay;
     public Button exit;
     public Button load;
     public TextMeshProUGUI log;
@@ -37,6 +38,8 @@ public class EditorMenu : MonoBehaviour
         backToEdit.gameObject.SetActive(layer == 2);
         play.gameObject.SetActive(layer == 2);
         save.gameObject.SetActive(layer == 2);
+        backToSelectSizeFromPlay.gameObject.SetActive(layer == 3);
+        load.gameObject.SetActive(layer != 3);
     }
 
     public void OnSlider()
@@ -72,7 +75,10 @@ public class EditorMenu : MonoBehaviour
 
     public void OnPlay()
 	{
+        
         field.SetMode(SquareField.Mode.play);
+        if (field.mode == SquareField.Mode.play)
+            SetActive(3);
     }
 
     public void OnSave()

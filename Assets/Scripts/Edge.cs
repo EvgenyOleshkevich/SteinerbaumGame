@@ -100,7 +100,19 @@ public class Edge : MonoBehaviour
 			}
 			currentColor = disabledColor;
 		}
-			
+		else if (status == Status.enabled && _status == Status.selected)
+		{
+			status = _status;
+			currentColor = selectedColor;
+			field.IsSolved();
+		}
+		else if (status == Status.selected && _status == Status.enabled)
+		{
+			status = _status;
+			currentColor = enabledColor;
+			field.IsSolved();
+		}
+
 		GetComponent<SpriteRenderer>().color = currentColor;
 	}
 

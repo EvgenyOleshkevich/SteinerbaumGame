@@ -48,28 +48,32 @@ public class EditorMenu : MonoBehaviour
     public void OnSubmitSize()
 	{
         field.SetSize((int)sizeSlider.value);
+        field.SetMode(SquareField.Mode.selectFigure);
         SetActive(1);
     }
 
     public void OnBackToSelectSize()
     {
+        field.SetMode(SquareField.Mode.selectSize);
         SetActive(0);
     }
 
     public void OnNextToSelect()
     {
+        field.SetMode(SquareField.Mode.selectVertex);
         SetActive(2);
     }
 
     public void OnBackToEdit()
     {
+        field.SetMode(SquareField.Mode.selectFigure);
         SetActive(1);
     }
 
     public void OnPlay()
 	{
-
-	}
+        field.SetMode(SquareField.Mode.play);
+    }
 
     public void OnSave()
     {

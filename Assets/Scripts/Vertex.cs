@@ -9,27 +9,38 @@ public class Vertex : MonoBehaviour
 
 	public enum Status { disabled = 0, enabled, selected };
 	public Status status { get; set; } = Status.enabled;
-	public Color defaultColor;
+	public Color disabledColor = Color.gray;
+	public Color enabledColor;
+	public Color selectedColor = Color.magenta;
 	public Color currentColor;
 	// Start is called before the first frame update
 	void Start()
 	{
-		defaultColor = GetComponent<Renderer>().material.color;
-		currentColor = defaultColor;
+		enabledColor = GetComponent<SpriteRenderer>().color;
+		currentColor = enabledColor;
+		disabledColor = Color.Lerp(disabledColor, enabledColor, 0.15f);
 	}
 
 	void OnMouseEnter()
 	{
-		GetComponent<Renderer>().material.color = Color.Lerp(Color.black, currentColor, 0.7f);
+		GetComponent<SpriteRenderer>().color = Color.Lerp(Color.black, currentColor, 0.7f);
 		foreach (Edge edge in edges)
 			edge.Enter();
 	}
-
 	void OnMouseExit()
 	{
-		GetComponent<Renderer>().material.color = currentColor;
+		GetComponent<SpriteRenderer>().color = currentColor;
 		foreach (Edge edge in edges)
 			edge.Exit();
+	}
+
+	public void Enter()
+	{
+		GetComponent<SpriteRenderer>().color = Color.Lerp(Color.black, currentColor, 0.7f);
+	}
+	public void Exit()
+	{
+		GetComponent<SpriteRenderer>().color = currentColor;
 	}
 
 	void OnMouseDown()
@@ -38,40 +49,34 @@ public class Vertex : MonoBehaviour
 		{
 			SetStatus(status == Status.enabled ? Status.disabled : Status.enabled);
 		}
-	}
-
-	public void Enter()
-	{
-		GetComponent<Renderer>().material.color = Color.Lerp(Color.black, currentColor, 0.7f);
-	}
-
-	public void Exit()
-	{
-		GetComponent<Renderer>().material.color = currentColor;
+		if (field.mode == SquareField.Mode.selectVertex && status != Status.disabled)
+		{
+			SetStatus(status == Status.enabled ? Status.selected : Status.enabled);
+		}
 	}
 
 	public void SetStatus(Status _status)
 	{
 		if (status == _status)
 			return;
-		status = _status;
-		if (status == Status.enabled)
+		if (status == Status.disabled && _status == Status.enabled)
 		{
+			Debug.Log(CountNeiborVertex());
 			if (CountNeiborVertex() > 0)
 			{
-				currentColor = defaultColor;
+				
+				status = Status.enabled;
+				currentColor = enabledColor;
 				foreach (Edge edge in edges)
 					if (edge.CouldBeEnabled())
 						edge.SetStatus(Edge.Status.enabled);
 			}
 			else
-			{
-				status = Status.disabled;
 				return;
-			}
 		}
-		else if (status == Status.disabled)
+		else if (status == Status.enabled && _status == Status.disabled)
 		{
+			status = _status;
 			var rollbackEdge = new List<Edge>();
 			var rollbackVertex = new List<Vertex>();
 			foreach (Edge edge in edges)
@@ -97,7 +102,6 @@ public class Vertex : MonoBehaviour
 					edge.ForceDisable();
 				foreach (Vertex vertex in rollbackVertex)
 					vertex.ForceDisable();
-
 			}
 			else
 			{
@@ -108,16 +112,33 @@ public class Vertex : MonoBehaviour
 					vertex.status = Status.enabled;
 				return;
 			}
-			currentColor = Color.gray;
+			currentColor = disabledColor;
 		}
-		GetComponent<Renderer>().material.color = currentColor;
+		else if (status == Status.enabled && _status == Status.selected)
+		{
+			status = _status;
+			currentColor = selectedColor;
+		}
+		else if (status == Status.selected && _status == Status.enabled)
+		{
+			status = _status;
+			currentColor = enabledColor;
+		}
+		GetComponent<SpriteRenderer>().color = currentColor;
 	}
 
 	public void ForceDisable()
 	{
 		status = Status.disabled;
-		currentColor = Color.gray;
-		GetComponent<Renderer>().material.color = currentColor;
+		currentColor = disabledColor;
+		GetComponent<SpriteRenderer>().color = currentColor;
+	}
+
+	public void ForceEnable()
+	{
+		status = Status.enabled;
+		currentColor = enabledColor;
+		GetComponent<SpriteRenderer>().color = currentColor;
 	}
 
 	public int CountEdges()
@@ -135,8 +156,8 @@ public class Vertex : MonoBehaviour
 		int count = 0;
 
 		foreach (Edge edge in edges)
-			if (edge.vertex1.status == Status.enabled &&
-				edge.vertex2.status == Status.enabled)
+			if (edge.vertex1 != this && edge.vertex1.status == Status.enabled ||
+				edge.vertex2 != this && edge.vertex2.status == Status.enabled)
 				++count;
 		return count;
 	}

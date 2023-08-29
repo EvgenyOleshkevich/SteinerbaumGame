@@ -21,7 +21,6 @@ public class SquareField : MonoBehaviour
     {
         DontDestroyOnLoad(this);
         GenerateField();
-        mode = Mode.selectFigure;
     }
 
     private void GenerateField()
@@ -117,6 +116,33 @@ public class SquareField : MonoBehaviour
         size = newSize;
     }
 
+    public void SetMode(Mode _mode)
+    {
+        if (mode == Mode.selectFigure)
+        {
+            if (_mode == Mode.selectSize)
+            {
+                int index = size - minSize;
+                for (int i = 0; i < allEdges[index].Length; ++i)
+                    allEdges[index][i].ForceEnable();
+
+                for (int i = 0; i < allVertexes[index].Length; ++i)
+                    allVertexes[index][i].ForceEnable();
+            }
+        }
+        else if (mode == Mode.selectVertex)
+        {
+            if (_mode == Mode.selectFigure)
+            {
+                int index = size - minSize;
+                for (int i = 0; i < allVertexes[index].Length; ++i)
+                    if (allVertexes[index][i].status == Vertex.Status.selected)
+                        allVertexes[index][i].ForceEnable();
+            }
+        }
+        mode = _mode;
+    }
+
     public bool IsConnected()
 	{
         int countEnabled = 0;
@@ -132,14 +158,12 @@ public class SquareField : MonoBehaviour
                 start = allVertexes[index][i];
                 break;
             }
-        Debug.Log(countEnabled);
         if (countEnabled == 0)
 		{
             log.text = "graph can not ba empty";
             return false;
         }
         int dfs_count = DFS(start, Vertex.Status.enabled, Edge.Status.enabled);
-        Debug.Log(dfs_count);
         bool res = dfs_count == countEnabled;
         if (!res)
             log.text = "graph should be connected";

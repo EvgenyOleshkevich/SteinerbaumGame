@@ -10,27 +10,39 @@ public class Edge : MonoBehaviour
 
 	public enum Status { disabled = 0, enabled, selected};
 	public Status status { get; set; } = Status.enabled;
-	public Color defaultColor;
+	public Color disabledColor = Color.gray;
+	public Color enabledColor;
+	public Color selectedColor = Color.blue;
 	public Color currentColor;
-    // Start is called before the first frame update
-    void Start()
+	// Start is called before the first frame update
+	void Start()
     {
-		defaultColor = GetComponent<Renderer>().material.color;
-		currentColor = defaultColor;
+		enabledColor = GetComponent<SpriteRenderer>().color;
+		currentColor = enabledColor;
+		disabledColor = Color.Lerp(disabledColor, enabledColor, 0.15f);
 	}
 
 	void OnMouseEnter()
 	{
-		GetComponent<Renderer>().material.color = Color.Lerp(Color.black, currentColor, 0.7f);
+		GetComponent<SpriteRenderer>().color = Color.Lerp(Color.black, currentColor, 0.7f);
 		vertex1.Enter();
 		vertex2.Enter();
 	}
 
 	void OnMouseExit()
 	{
-		GetComponent<Renderer>().material.color = currentColor;
+		GetComponent<SpriteRenderer>().color = currentColor;
 		vertex1.Exit();
 		vertex2.Exit();
+	}
+
+	public void Enter()
+	{
+		GetComponent<SpriteRenderer>().color = Color.Lerp(Color.black, currentColor, 0.7f);
+	}
+	public void Exit()
+	{
+		GetComponent<SpriteRenderer>().color = currentColor;
 	}
 
 	void OnMouseDown()
@@ -39,37 +51,31 @@ public class Edge : MonoBehaviour
 		{
 			SetStatus(status == Status.enabled ? Status.disabled : Status.enabled);
 		}
-	}
-
-	public void Enter()
-	{
-		GetComponent<Renderer>().material.color = Color.Lerp(Color.black, currentColor, 0.7f);
-	}
-
-	public void Exit()
-	{
-		GetComponent<Renderer>().material.color = currentColor;
+		if (field.mode == SquareField.Mode.play && status != Status.disabled)
+		{
+			SetStatus(status == Status.enabled ? Status.selected : Status.enabled);
+		}
 	}
 
 	public void SetStatus(Status _status)
 	{
 		if (status == _status)
 			return;
-		status = _status;
-		if (status == Status.enabled)
+		
+		if (status == Status.disabled && _status == Status.enabled)
 		{
 			if (CouldBeEnabled())
-				currentColor = defaultColor;
-			else
 			{
-				status = Status.disabled;
-				return;
+				currentColor = enabledColor;
+				status = _status;
 			}
+			else
+				return;
 		}
-		else if (status == Status.disabled)
+		else if (status == Status.enabled && _status == Status.disabled)
 		{
 			var rollbackVertex = new List<Vertex>();
-
+			status = _status;
 			if (vertex1.CountEdges() == 0)
 			{
 				vertex1.status = Vertex.Status.disabled;
@@ -92,17 +98,24 @@ public class Edge : MonoBehaviour
 					vertex.status = Vertex.Status.enabled;
 				return;
 			}
-			currentColor = Color.gray;
+			currentColor = disabledColor;
 		}
 			
-		GetComponent<Renderer>().material.color = currentColor;
+		GetComponent<SpriteRenderer>().color = currentColor;
 	}
 
 	public void ForceDisable()
 	{
 		status = Status.disabled;
-		currentColor = Color.gray;
-		GetComponent<Renderer>().material.color = currentColor;
+		currentColor = disabledColor;
+		GetComponent<SpriteRenderer>().color = currentColor;
+	}
+
+	public void ForceEnable()
+	{
+		status = Status.enabled;
+		currentColor = enabledColor;
+		GetComponent<SpriteRenderer>().color = currentColor;
 	}
 
 	public bool CouldBeEnabled()
